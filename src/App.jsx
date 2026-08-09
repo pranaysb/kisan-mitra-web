@@ -109,8 +109,9 @@ function App() {
     if (description) formData.append('description', description);
     if (audioBlob) formData.append('audio', audioBlob, 'voice.wav');
 
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
     try {
-      const response = await fetch('http://localhost:8000/diagnose', {
+      const response = await fetch(`${apiUrl}/diagnose`, {
         method: 'POST',
         body: formData,
       });
