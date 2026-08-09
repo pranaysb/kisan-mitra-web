@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-bg text-charcoal font-sans antialiased min-h-screen relative;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight text-charcoal;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-kisan/20 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-kisan/40;
+}
+
+/* Hide standard file input */
+.hide-file-input {
+  opacity: 0;
+  width: 0.1px;
+  height: 0.1px;
+  position: absolute;
+}
