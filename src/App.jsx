@@ -346,27 +346,27 @@ function App() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
               
               {/* Service Card 1: Crop Doctor */}
               <div 
                 onClick={() => setActiveView('crop')}
                 className="group cursor-pointer bg-white rounded-2xl overflow-hidden border border-kisan/10 shadow-sm hover:shadow-xl hover:border-kisan/30 transition-all flex flex-col h-full"
               >
-                <div className="h-40 overflow-hidden relative">
+                <div className="h-48 md:h-56 overflow-hidden relative">
                   <img src="/crop_doctor_logo.jpg" alt="Crop Doctor" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <ShieldCheck className="w-6 h-6 mb-1 text-kisan" />
-                    <h3 className="text-xl font-display font-bold">Crop Doctor</h3>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4 text-white drop-shadow-md">
+                    <ShieldCheck className="w-8 h-8 mb-2 text-kisan drop-shadow-lg" />
+                    <h3 className="text-2xl font-display font-bold tracking-wide">Crop Doctor</h3>
                   </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
-                  <p className="text-soil font-medium text-sm mb-6 flex-1">
+                  <p className="text-soil font-medium text-base mb-6 flex-1 leading-relaxed">
                     Upload a photo of your affected crop for an instant AI-powered diagnosis and treatment plan.
                   </p>
                   <div className="flex items-center text-kisan font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
-                    Access Service <ChevronRight className="w-4 h-4 ml-1" />
+                    Access Service <ChevronRight className="w-5 h-5 ml-1" />
                   </div>
                 </div>
               </div>
@@ -376,20 +376,20 @@ function App() {
                 onClick={() => setActiveView('yojana')}
                 className="group cursor-pointer bg-white rounded-2xl overflow-hidden border border-kisan/10 shadow-sm hover:shadow-xl hover:border-kisan/30 transition-all flex flex-col h-full"
               >
-                <div className="h-40 overflow-hidden relative">
+                <div className="h-48 md:h-56 overflow-hidden relative">
                   <img src="/yojana_radar_logo.jpg" alt="Yojana Radar" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <Landmark className="w-6 h-6 mb-1 text-harvest" />
-                    <h3 className="text-xl font-display font-bold">Yojana Radar</h3>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4 text-white drop-shadow-md">
+                    <Landmark className="w-8 h-8 mb-2 text-harvest drop-shadow-lg" />
+                    <h3 className="text-2xl font-display font-bold tracking-wide">Yojana Radar</h3>
                   </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
-                  <p className="text-soil font-medium text-sm mb-6 flex-1">
+                  <p className="text-soil font-medium text-base mb-6 flex-1 leading-relaxed">
                     Discover government schemes, subsidies, and financial aid you are eligible for based on your profile.
                   </p>
                   <div className="flex items-center text-harvest font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
-                    Access Service <ChevronRight className="w-4 h-4 ml-1" />
+                    Access Service <ChevronRight className="w-5 h-5 ml-1" />
                   </div>
                 </div>
               </div>
@@ -399,20 +399,20 @@ function App() {
                 onClick={() => setActiveView('mandi')}
                 className="group cursor-pointer bg-white rounded-2xl overflow-hidden border border-kisan/10 shadow-sm hover:shadow-xl hover:border-kisan/30 transition-all flex flex-col h-full"
               >
-                <div className="h-40 overflow-hidden relative">
+                <div className="h-48 md:h-56 overflow-hidden relative">
                   <img src="/mandi_prices_logo.jpg" alt="Mandi Prices" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <TrendingUp className="w-6 h-6 mb-1 text-orange-400" />
-                    <h3 className="text-xl font-display font-bold">Mandi Prices</h3>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4 text-white drop-shadow-md">
+                    <TrendingUp className="w-8 h-8 mb-2 text-orange-400 drop-shadow-lg" />
+                    <h3 className="text-2xl font-display font-bold tracking-wide">Mandi Prices</h3>
                   </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
-                  <p className="text-soil font-medium text-sm mb-6 flex-1">
+                  <p className="text-soil font-medium text-base mb-6 flex-1 leading-relaxed">
                     Check live simulated APMC mandi prices for your crops across India before selling.
                   </p>
                   <div className="flex items-center text-orange-600 font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
-                    Access Service <ChevronRight className="w-4 h-4 ml-1" />
+                    Access Service <ChevronRight className="w-5 h-5 ml-1" />
                   </div>
                 </div>
               </div>
@@ -422,20 +422,20 @@ function App() {
                 onClick={() => setActiveView('weather')}
                 className="group cursor-pointer bg-white rounded-2xl overflow-hidden border border-kisan/10 shadow-sm hover:shadow-xl hover:border-kisan/30 transition-all flex flex-col h-full"
               >
-                <div className="h-40 overflow-hidden relative">
+                <div className="h-48 md:h-56 overflow-hidden relative">
                   <img src="/weather_advisory_logo.jpg" alt="Weather Advisory" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <CloudSun className="w-6 h-6 mb-1 text-blue-400" />
-                    <h3 className="text-xl font-display font-bold">Weather Advisory</h3>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4 text-white drop-shadow-md">
+                    <CloudSun className="w-8 h-8 mb-2 text-blue-400 drop-shadow-lg" />
+                    <h3 className="text-2xl font-display font-bold tracking-wide">Weather Advisory</h3>
                   </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
-                  <p className="text-soil font-medium text-sm mb-6 flex-1">
+                  <p className="text-soil font-medium text-base mb-6 flex-1 leading-relaxed">
                     Get localized weather forecasts and farming advisories specific to your crop lifecycle.
                   </p>
                   <div className="flex items-center text-blue-600 font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
-                    Access Service <ChevronRight className="w-4 h-4 ml-1" />
+                    Access Service <ChevronRight className="w-5 h-5 ml-1" />
                   </div>
                 </div>
               </div>
