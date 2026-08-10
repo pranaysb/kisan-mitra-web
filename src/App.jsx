@@ -232,8 +232,8 @@ function App() {
       <div className="bg-[#1b263b] text-white text-xs py-1.5 px-4 sm:px-6 z-50 relative">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
           <div className="flex items-center gap-4 text-white/80 font-medium">
-            <span className="hover:text-white cursor-pointer">GOVERNMENT OF INDIA</span>
-            <span className="hidden sm:inline border-l border-white/20 pl-4 hover:text-white cursor-pointer">MINISTRY OF AGRICULTURE & FARMERS WELFARE</span>
+            <span className="hover:text-white cursor-pointer">KISAN MITRA</span>
+            <span className="hidden sm:inline border-l border-white/20 pl-4 hover:text-white cursor-pointer">BUILD WITH GEMMA HACKATHON 2026</span>
           </div>
           <div className="flex items-center gap-4 text-white/80 font-medium">
             <a href="#main-content" className="hover:text-white hidden sm:inline">Skip to main content</a>
@@ -925,8 +925,8 @@ function App() {
               <a href="#" className="hover:text-white">Accessibility Statement</a>
             </div>
             <div className="text-white/50 text-center md:text-right">
-              <p>© {new Date().getFullYear()} Ministry of Agriculture & Farmers Welfare.</p>
-              <p>Designed & Developed by National Informatics Centre (NIC) - Placeholder</p>
+              <p>© {new Date().getFullYear()} Kisan Mitra.</p>
+              <p>Designed & Developed for Build with Gemma Hackathon 2026</p>
             </div>
           </div>
         </div>
