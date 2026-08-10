@@ -105,7 +105,7 @@ function App() {
       setError("Please add a photo of your crop to continue.");
       return;
     }
-    if (activeView === 'yojana' && (!location || !cropName)) {
+    if ((activeView === 'yojana' || activeView === 'mandi' || activeView === 'weather') && (!location || !cropName)) {
       setError("Please enter your state/location and crop name.");
       return;
     }
@@ -115,20 +115,29 @@ function App() {
     setResult(null);
 
     const formData = new FormData();
-    formData.append('location', location || 'Unknown');
     formData.append('crop_name', cropName || 'Unknown');
+    formData.append('crop', cropName || 'Unknown'); // backend aliases
+    
     if (description) formData.append('description', description);
     if (audioBlob) formData.append('audio', audioBlob, 'voice.wav');
 
     let endpoint = '';
     if (activeView === 'crop') {
+        formData.append('location', location || 'Unknown');
         formData.append('image', imageFile);
         endpoint = '/diagnose';
-    } else {
+    } else if (activeView === 'yojana') {
         formData.append('state', location || 'Unknown');
-        formData.append('crop', cropName || 'Unknown');
         formData.append('land_size', landSize);
         endpoint = '/yojana';
+    } else if (activeView === 'mandi') {
+        formData.append('state', location || 'Unknown');
+        formData.append('district', location || 'Unknown');
+        endpoint = '/mandi';
+    } else if (activeView === 'weather') {
+        formData.append('state', location || 'Unknown');
+        formData.append('district', location || 'Unknown');
+        endpoint = '/weather';
     }
 
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -337,69 +346,97 @@ function App() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               
               {/* Service Card 1: Crop Doctor */}
               <div 
                 onClick={() => setActiveView('crop')}
-                className="group cursor-pointer bg-white rounded-2xl p-8 border border-kisan/10 shadow-sm hover:shadow-xl hover:border-kisan/30 transition-all flex flex-col h-full"
+                className="group cursor-pointer bg-white rounded-2xl overflow-hidden border border-kisan/10 shadow-sm hover:shadow-xl hover:border-kisan/30 transition-all flex flex-col h-full"
               >
-                <div className="w-16 h-16 bg-kisan/10 text-kisan rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <ShieldCheck className="w-8 h-8" />
+                <div className="h-40 overflow-hidden relative">
+                  <img src="/crop_doctor_logo.jpg" alt="Crop Doctor" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <ShieldCheck className="w-6 h-6 mb-1 text-kisan" />
+                    <h3 className="text-xl font-display font-bold">Crop Doctor</h3>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-display font-bold text-charcoal mb-3 group-hover:text-kisan transition-colors">Crop Doctor</h3>
-                <p className="text-soil font-medium mb-8 flex-1">
-                  Upload a photo of your affected crop for an instant AI-powered diagnosis. Get a complete treatment plan including chemical controls.
-                </p>
-                <div className="flex items-center text-kisan font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
-                  Access Service <ChevronRight className="w-4 h-4 ml-1" />
+                <div className="p-6 flex flex-col flex-1">
+                  <p className="text-soil font-medium text-sm mb-6 flex-1">
+                    Upload a photo of your affected crop for an instant AI-powered diagnosis and treatment plan.
+                  </p>
+                  <div className="flex items-center text-kisan font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
+                    Access Service <ChevronRight className="w-4 h-4 ml-1" />
+                  </div>
                 </div>
               </div>
 
               {/* Service Card 2: Yojana Radar */}
               <div 
                 onClick={() => setActiveView('yojana')}
-                className="group cursor-pointer bg-white rounded-2xl p-8 border border-kisan/10 shadow-sm hover:shadow-xl hover:border-kisan/30 transition-all flex flex-col h-full"
+                className="group cursor-pointer bg-white rounded-2xl overflow-hidden border border-kisan/10 shadow-sm hover:shadow-xl hover:border-kisan/30 transition-all flex flex-col h-full"
               >
-                <div className="w-16 h-16 bg-harvest/20 text-harvest rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <Landmark className="w-8 h-8" />
+                <div className="h-40 overflow-hidden relative">
+                  <img src="/yojana_radar_logo.jpg" alt="Yojana Radar" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <Landmark className="w-6 h-6 mb-1 text-harvest" />
+                    <h3 className="text-xl font-display font-bold">Yojana Radar</h3>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-display font-bold text-charcoal mb-3 group-hover:text-harvest transition-colors">Yojana Radar</h3>
-                <p className="text-soil font-medium mb-8 flex-1">
-                  Discover government schemes, subsidies, and financial aid you are eligible for based on your location and land profile.
-                </p>
-                <div className="flex items-center text-harvest font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
-                  Access Service <ChevronRight className="w-4 h-4 ml-1" />
-                </div>
-              </div>
-
-              {/* Service Card 3: Market Prices (Coming Soon) */}
-              <div className="bg-bg/50 rounded-2xl p-8 border border-kisan/5 relative overflow-hidden flex flex-col h-full opacity-70">
-                <div className="absolute top-4 right-4 bg-charcoal text-white text-[10px] font-bold uppercase px-2 py-1 rounded">Coming Soon</div>
-                <div className="w-16 h-16 bg-soil/10 text-soil rounded-xl flex items-center justify-center mb-6">
-                  <TrendingUp className="w-8 h-8" />
-                </div>
-                <h3 className="text-2xl font-display font-bold text-charcoal mb-3">Mandi Prices</h3>
-                <p className="text-soil font-medium mb-8 flex-1">
-                  Check live APMC mandi prices for your crops across India. Get market trend analysis before selling your harvest.
-                </p>
-                <div className="flex items-center text-soil/50 font-bold text-sm uppercase tracking-wider">
-                  Unavailable <ChevronRight className="w-4 h-4 ml-1" />
+                <div className="p-6 flex flex-col flex-1">
+                  <p className="text-soil font-medium text-sm mb-6 flex-1">
+                    Discover government schemes, subsidies, and financial aid you are eligible for based on your profile.
+                  </p>
+                  <div className="flex items-center text-harvest font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
+                    Access Service <ChevronRight className="w-4 h-4 ml-1" />
+                  </div>
                 </div>
               </div>
 
-              {/* Service Card 4: Weather Advisory (Coming Soon) */}
-              <div className="bg-bg/50 rounded-2xl p-8 border border-kisan/5 relative overflow-hidden flex flex-col h-full opacity-70">
-                <div className="absolute top-4 right-4 bg-charcoal text-white text-[10px] font-bold uppercase px-2 py-1 rounded">Coming Soon</div>
-                <div className="w-16 h-16 bg-soil/10 text-soil rounded-xl flex items-center justify-center mb-6">
-                  <CloudSun className="w-8 h-8" />
+              {/* Service Card 3: Mandi Prices */}
+              <div 
+                onClick={() => setActiveView('mandi')}
+                className="group cursor-pointer bg-white rounded-2xl overflow-hidden border border-kisan/10 shadow-sm hover:shadow-xl hover:border-kisan/30 transition-all flex flex-col h-full"
+              >
+                <div className="h-40 overflow-hidden relative">
+                  <img src="/mandi_prices_logo.jpg" alt="Mandi Prices" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <TrendingUp className="w-6 h-6 mb-1 text-orange-400" />
+                    <h3 className="text-xl font-display font-bold">Mandi Prices</h3>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-display font-bold text-charcoal mb-3">Weather Advisory</h3>
-                <p className="text-soil font-medium mb-8 flex-1">
-                  Get localized weather forecasts and farming advisories specific to your crop lifecycle and current climate conditions.
-                </p>
-                <div className="flex items-center text-soil/50 font-bold text-sm uppercase tracking-wider">
-                  Unavailable <ChevronRight className="w-4 h-4 ml-1" />
+                <div className="p-6 flex flex-col flex-1">
+                  <p className="text-soil font-medium text-sm mb-6 flex-1">
+                    Check live simulated APMC mandi prices for your crops across India before selling.
+                  </p>
+                  <div className="flex items-center text-orange-600 font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
+                    Access Service <ChevronRight className="w-4 h-4 ml-1" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Service Card 4: Weather Advisory */}
+              <div 
+                onClick={() => setActiveView('weather')}
+                className="group cursor-pointer bg-white rounded-2xl overflow-hidden border border-kisan/10 shadow-sm hover:shadow-xl hover:border-kisan/30 transition-all flex flex-col h-full"
+              >
+                <div className="h-40 overflow-hidden relative">
+                  <img src="/weather_advisory_logo.jpg" alt="Weather Advisory" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <CloudSun className="w-6 h-6 mb-1 text-blue-400" />
+                    <h3 className="text-xl font-display font-bold">Weather Advisory</h3>
+                  </div>
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <p className="text-soil font-medium text-sm mb-6 flex-1">
+                    Get localized weather forecasts and farming advisories specific to your crop lifecycle.
+                  </p>
+                  <div className="flex items-center text-blue-600 font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
+                    Access Service <ChevronRight className="w-4 h-4 ml-1" />
+                  </div>
                 </div>
               </div>
 
@@ -407,7 +444,7 @@ function App() {
           </div>
         )}
 
-        {/* === MODULE VIEW (CROP DOCTOR OR YOJANA RADAR) === */}
+        {/* === MODULE VIEW === */}
         {activeView !== 'home' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
@@ -426,11 +463,21 @@ function App() {
               <div className="mb-6 flex items-center justify-between border-b-2 border-kisan/20 pb-4">
                 <div>
                   <h2 className="text-2xl md:text-3xl font-display font-bold text-charcoal flex items-center gap-2">
-                    {activeView === 'crop' ? <ShieldCheck className="w-8 h-8 text-kisan" /> : <Landmark className="w-8 h-8 text-kisan" />}
-                    {activeView === 'crop' ? 'Crop Diagnosis Service' : 'Scheme Discovery Service'}
+                    {activeView === 'crop' && <ShieldCheck className="w-8 h-8 text-kisan" />}
+                    {activeView === 'yojana' && <Landmark className="w-8 h-8 text-harvest" />}
+                    {activeView === 'mandi' && <TrendingUp className="w-8 h-8 text-orange-500" />}
+                    {activeView === 'weather' && <CloudSun className="w-8 h-8 text-blue-500" />}
+                    
+                    {activeView === 'crop' && 'Crop Diagnosis Service'}
+                    {activeView === 'yojana' && 'Scheme Discovery Service'}
+                    {activeView === 'mandi' && 'Mandi Price Radar'}
+                    {activeView === 'weather' && 'Weather Advisory'}
                   </h2>
                   <p className="text-soil mt-1 font-medium">
-                    {activeView === 'crop' ? 'Upload a photo for instant AI analysis.' : 'Find government subsidies you qualify for.'}
+                    {activeView === 'crop' && 'Upload a photo for instant AI analysis.'}
+                    {activeView === 'yojana' && 'Find government subsidies you qualify for.'}
+                    {activeView === 'mandi' && 'Check live market prices for your crop.'}
+                    {activeView === 'weather' && 'Get localized agrometeorological advice.'}
                   </p>
                 </div>
                 <div className="hidden sm:block text-kisan">
@@ -472,7 +519,7 @@ function App() {
                 <div className="bg-white rounded-xl p-6 shadow-sm border border-kisan/10 relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-1 h-full bg-kisan"></div>
                   <h3 className="font-bold text-lg text-charcoal mb-4">
-                    {activeView === 'crop' ? 'Step 2: Basic Details' : 'Step 1: Farmer Details'}
+                    {activeView === 'crop' ? 'Step 2: Basic Details' : 'Step 1: Location & Crop'}
                   </h3>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
@@ -499,7 +546,7 @@ function App() {
                         onChange={(e) => setLocation(e.target.value)}
                         required
                         className="w-full bg-bg border border-kisan/20 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kisan transition-all font-medium"
-                        placeholder={activeView === 'crop' ? 'e.g. Prayagraj' : 'e.g. Uttar Pradesh'}
+                        placeholder={activeView === 'crop' ? 'e.g. Prayagraj' : 'e.g. Uttar Pradesh, Prayagraj'}
                       />
                     </div>
                   </div>
@@ -527,7 +574,7 @@ function App() {
                 <div className="bg-white rounded-xl p-6 shadow-sm border border-kisan/10 relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-1 h-full bg-kisan"></div>
                   <h3 className="font-bold text-lg text-charcoal mb-4">
-                    {activeView === 'crop' ? 'Step 3: Symptoms' : 'Step 2: Additional Needs'}
+                    {activeView === 'crop' ? 'Step 3: Symptoms' : 'Step 2: Additional Details'}
                   </h3>
                   
                   {renderVoiceRecorder()}
@@ -545,7 +592,11 @@ function App() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="w-full bg-bg border border-kisan/20 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-kisan transition-all min-h-[100px] resize-none font-medium placeholder:text-soil/70"
-                    placeholder={activeView === 'crop' ? 'Describe any spots, color changes, or pests you noticed...' : 'Any other details about your farming methods, category, or specific equipment needs...'}
+                    placeholder={
+                      activeView === 'crop' ? 'Describe any spots, color changes, or pests you noticed...' : 
+                      activeView === 'mandi' ? 'Any specific market you are looking for (e.g. Azadpur Mandi)?' :
+                      'Any other details about your farming methods, category, or specific equipment needs...'
+                    }
                   />
                 </div>
 
@@ -561,7 +612,11 @@ function App() {
                     </>
                   ) : (
                     <>
-                      {activeView === 'crop' ? 'Generate Treatment Plan' : 'Search Database'} <ChevronRight className="w-5 h-5" />
+                      {activeView === 'crop' && 'Generate Treatment Plan'}
+                      {activeView === 'yojana' && 'Search Database'}
+                      {activeView === 'mandi' && 'Check Live Prices'}
+                      {activeView === 'weather' && 'Get Weather Advisory'}
+                      <ChevronRight className="w-5 h-5" />
                     </>
                   )}
                 </button>
@@ -593,9 +648,10 @@ function App() {
                         <Info className="w-8 h-8 text-soil" />
                       </div>
                       <p className="text-soil font-medium max-w-xs">
-                        {activeView === 'crop' 
-                          ? 'Submit your crop details and photo to receive an AI-generated diagnosis report.' 
-                          : 'Submit your profile to query the national database for applicable agricultural schemes.'}
+                        {activeView === 'crop' && 'Submit your crop details and photo to receive an AI-generated diagnosis report.'}
+                        {activeView === 'yojana' && 'Submit your profile to query the national database for applicable agricultural schemes.'}
+                        {activeView === 'mandi' && 'Submit your location to query live simulated APMC Mandi prices.'}
+                        {activeView === 'weather' && 'Submit your location to receive a simulated localized weather advisory.'}
                       </p>
                     </div>
                   )}
@@ -705,6 +761,110 @@ function App() {
                             </div>
                           </div>
                         ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mandi Prices Results */}
+                  {result && !loading && activeView === 'mandi' && (
+                    <div className="space-y-6">
+                      <div className="border-b border-kisan/10 pb-4">
+                        <p className="text-xs font-bold text-soil uppercase tracking-wider mb-1">Market Snapshot - {result.date}</p>
+                        <h2 className="font-display font-bold text-2xl text-orange-600 leading-tight">
+                          {result.mandi_name}
+                        </h2>
+                      </div>
+
+                      {result.audio_b64 && (
+                        <div className="bg-orange-50 rounded-lg p-3 flex items-center gap-3 border border-orange-200">
+                          <div className="w-10 h-10 rounded-full bg-white text-orange-500 flex items-center justify-center shrink-0 shadow-sm">
+                            <AudioLines className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1 w-full overflow-hidden">
+                            <p className="text-xs font-bold text-orange-600 uppercase mb-1">Audio Market Update</p>
+                            <audio controls className="w-full h-8 opacity-90 custom-audio" style={{maxWidth: '100%'}}>
+                              <source src={`data:audio/wav;base64,${result.audio_b64}`} type="audio/wav" />
+                            </audio>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-3 gap-2">
+                        <div className="bg-bg p-3 rounded-xl border border-kisan/10 text-center">
+                          <p className="text-[10px] font-bold text-soil uppercase">Min Price</p>
+                          <p className="text-lg font-bold text-charcoal">₹{result.min_price}</p>
+                        </div>
+                        <div className="bg-orange-50 p-3 rounded-xl border border-orange-200 text-center shadow-sm relative -top-2">
+                          <p className="text-[10px] font-bold text-orange-600 uppercase">Modal Price</p>
+                          <p className="text-2xl font-bold text-orange-600">₹{result.modal_price}</p>
+                        </div>
+                        <div className="bg-bg p-3 rounded-xl border border-kisan/10 text-center">
+                          <p className="text-[10px] font-bold text-soil uppercase">Max Price</p>
+                          <p className="text-lg font-bold text-charcoal">₹{result.max_price}</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-white p-4 rounded-xl border border-kisan/10">
+                        <div className="flex items-center gap-2 mb-2">
+                          <TrendingUp className="w-4 h-4 text-orange-500" />
+                          <h4 className="text-sm font-bold text-charcoal">Market Advisory</h4>
+                          <span className="ml-auto text-xs font-bold bg-bg px-2 py-1 rounded text-soil">{result.trend}</span>
+                        </div>
+                        <p className="text-sm text-charcoal/80 leading-relaxed border-l-2 border-orange-300 pl-3">
+                          {result.advisory}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Weather Advisory Results */}
+                  {result && !loading && activeView === 'weather' && (
+                    <div className="space-y-6">
+                      <div className="border-b border-kisan/10 pb-4 flex justify-between items-end">
+                        <div>
+                          <p className="text-xs font-bold text-soil uppercase tracking-wider mb-1">Agrometeorological Update</p>
+                          <h2 className="font-display font-bold text-2xl text-blue-600 leading-tight">
+                            {result.temperature}
+                          </h2>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs font-bold text-soil uppercase tracking-wider mb-1">Rain Prob.</p>
+                          <p className="font-bold text-blue-500">{result.rain_probability}</p>
+                        </div>
+                      </div>
+
+                      {result.audio_b64 && (
+                        <div className="bg-blue-50 rounded-lg p-3 flex items-center gap-3 border border-blue-200">
+                          <div className="w-10 h-10 rounded-full bg-white text-blue-500 flex items-center justify-center shrink-0 shadow-sm">
+                            <AudioLines className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1 w-full overflow-hidden">
+                            <p className="text-xs font-bold text-blue-600 uppercase mb-1">Audio Weather Alert</p>
+                            <audio controls className="w-full h-8 opacity-90 custom-audio" style={{maxWidth: '100%'}}>
+                              <source src={`data:audio/wav;base64,${result.audio_b64}`} type="audio/wav" />
+                            </audio>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="bg-white p-4 rounded-xl border border-kisan/10">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CloudSun className="w-4 h-4 text-blue-500" />
+                          <h4 className="text-sm font-bold text-charcoal">3-Day Forecast</h4>
+                        </div>
+                        <p className="text-sm text-charcoal/80 leading-relaxed">
+                          {result.forecast}
+                        </p>
+                      </div>
+
+                      <div className={`p-4 rounded-xl border ${result.alert_level === 'Warning' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}`}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Leaf className={`w-4 h-4 ${result.alert_level === 'Warning' ? 'text-orange-500' : 'text-blue-500'}`} />
+                          <h4 className={`text-sm font-bold ${result.alert_level === 'Warning' ? 'text-orange-700' : 'text-blue-700'}`}>Crop Action Plan</h4>
+                        </div>
+                        <p className={`text-sm leading-relaxed ${result.alert_level === 'Warning' ? 'text-orange-800' : 'text-blue-800'}`}>
+                          {result.crop_advisory}
+                        </p>
                       </div>
                     </div>
                   )}
