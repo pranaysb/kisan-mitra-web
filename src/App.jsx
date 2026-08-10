@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Upload, Mic, Square, X, Leaf, Info, Activity, ShieldCheck, Sun, Droplets, MapPin, AudioLines } from 'lucide-react';
+import { Upload, Mic, Square, X, Leaf, Info, Activity, ShieldCheck, Sun, MapPin, AudioLines, ScrollText, Landmark, CheckCircle2 } from 'lucide-react';
 
 function App() {
+  const [activeTab, setActiveTab] = useState('crop'); // 'crop' or 'yojana'
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [location, setLocation] = useState('');
   const [cropName, setCropName] = useState('');
   const [description, setDescription] = useState('');
+  const [landSize, setLandSize] = useState('Marginal (< 1 Hectare)');
   
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -30,6 +32,12 @@ function App() {
     }
     return () => clearInterval(timerRef.current);
   }, [isRecording]);
+
+  // Reset form when changing tabs
+  useEffect(() => {
+    setResult(null);
+    setError(null);
+  }, [activeTab]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -93,8 +101,12 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!imageFile) {
+    if (activeTab === 'crop' && !imageFile) {
       setError("Please add a photo of your crop to continue.");
+      return;
+    }
+    if (activeTab === 'yojana' && (!location || !cropName)) {
+      setError("Please enter your state/location and crop name.");
       return;
     }
 
@@ -103,15 +115,25 @@ function App() {
     setResult(null);
 
     const formData = new FormData();
-    formData.append('image', imageFile);
     formData.append('location', location || 'Unknown');
     formData.append('crop_name', cropName || 'Unknown');
     if (description) formData.append('description', description);
     if (audioBlob) formData.append('audio', audioBlob, 'voice.wav');
 
+    let endpoint = '';
+    if (activeTab === 'crop') {
+        formData.append('image', imageFile);
+        endpoint = '/diagnose';
+    } else {
+        formData.append('state', location || 'Unknown');
+        formData.append('crop', cropName || 'Unknown');
+        formData.append('land_size', landSize);
+        endpoint = '/yojana';
+    }
+
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
     try {
-      const response = await fetch(`${apiUrl}/diagnose`, {
+      const response = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',
         body: formData,
       });
@@ -135,6 +157,65 @@ function App() {
     }
   };
 
+  const renderVoiceRecorder = () => (
+    <div className={`rounded-xl p-4 mb-5 border-2 transition-all ${isRecording ? 'border-danger bg-danger/5' : audioBlob ? 'border-kisan bg-kisanLight' : 'border-kisan/10 bg-bg'}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          {isRecording ? (
+            <>
+              <div className="relative flex items-center justify-center w-10 h-10">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-danger opacity-40"></span>
+                <Mic className="relative w-6 h-6 text-danger animate-pulse" />
+              </div>
+              <div>
+                <p className="font-bold text-danger">Recording Voice Note...</p>
+                <p className="text-sm font-medium text-danger/80">{formatTime(recordingTime)}</p>
+              </div>
+            </>
+          ) : audioBlob ? (
+            <>
+              <div className="w-10 h-10 rounded-full bg-kisan text-white flex items-center justify-center">
+                <AudioLines className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="font-bold text-kisan">Voice Note Attached</p>
+                <p className="text-sm font-medium text-kisan/80">{formatTime(recordingTime)}</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="w-10 h-10 rounded-full bg-harvestLight text-harvest flex items-center justify-center">
+                <Mic className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="font-bold text-charcoal">Use Voice (Recommended)</p>
+                <p className="text-sm font-medium text-soil">Speak in Hindi or English</p>
+              </div>
+            </>
+          )}
+        </div>
+        <div className="flex gap-2 w-full sm:w-auto">
+          {isRecording ? (
+            <button type="button" onClick={stopRecording} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-danger text-white px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-red-700 transition-colors">
+              <Square className="w-4 h-4 fill-current" /> Stop
+            </button>
+          ) : (
+            <>
+              {audioBlob && (
+                <button type="button" onClick={clearAudio} className="p-3 text-soil hover:bg-danger/10 hover:text-danger rounded-xl transition-colors" title="Delete voice note">
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+              <button type="button" onClick={startRecording} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-kisan text-white px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-green-800 transition-colors">
+                <Mic className="w-5 h-5" /> {audioBlob ? 'Record Again' : 'Record'}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-bg text-charcoal font-sans selection:bg-harvest selection:text-white pb-20">
       
@@ -148,11 +229,35 @@ function App() {
             <span className="font-display font-bold text-2xl text-kisan tracking-tight">Kisan Mitra</span>
           </div>
           <div className="hidden sm:flex items-center gap-6 font-medium text-sm text-soil">
-            <span className="text-kisan font-semibold cursor-pointer">Crop Doctor</span>
-            <span className="hover:text-kisan transition-colors cursor-pointer">Yojana Radar</span>
+            <span 
+              onClick={() => setActiveTab('crop')}
+              className={`cursor-pointer transition-colors ${activeTab === 'crop' ? 'text-kisan font-bold border-b-2 border-kisan pb-1' : 'hover:text-kisan'}`}>
+              Crop Doctor
+            </span>
+            <span 
+              onClick={() => setActiveTab('yojana')}
+              className={`cursor-pointer transition-colors ${activeTab === 'yojana' ? 'text-kisan font-bold border-b-2 border-kisan pb-1' : 'hover:text-kisan'}`}>
+              Yojana Radar
+            </span>
           </div>
         </div>
       </header>
+
+      {/* Mobile Tab Nav (since header links are hidden on small screens) */}
+      <div className="sm:hidden bg-surface border-b border-kisan/10 sticky top-16 z-40">
+         <div className="flex">
+            <button 
+              onClick={() => setActiveTab('crop')}
+              className={`flex-1 py-3 text-sm font-bold transition-colors ${activeTab === 'crop' ? 'text-kisan border-b-2 border-kisan bg-kisan/5' : 'text-soil hover:text-charcoal'}`}>
+              Crop Doctor
+            </button>
+            <button 
+              onClick={() => setActiveTab('yojana')}
+              className={`flex-1 py-3 text-sm font-bold transition-colors ${activeTab === 'yojana' ? 'text-kisan border-b-2 border-kisan bg-kisan/5' : 'text-soil hover:text-charcoal'}`}>
+              Yojana Radar
+            </button>
+         </div>
+      </div>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 md:pt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
@@ -160,51 +265,59 @@ function App() {
         <div className="lg:col-span-7 space-y-6">
           
           <div className="mb-6">
-            <h1 className="text-3xl md:text-4xl font-display font-bold mb-3 text-kisan">Diagnose Your Crop</h1>
-            <p className="text-soil text-lg">Upload a photo and tell us the symptoms. We'll provide an expert treatment plan instantly.</p>
+            <h1 className="text-3xl md:text-4xl font-display font-bold mb-3 text-kisan">
+              {activeTab === 'crop' ? 'Diagnose Your Crop' : 'Discover Yojanas'}
+            </h1>
+            <p className="text-soil text-lg">
+              {activeTab === 'crop' ? 'Upload a photo and tell us the symptoms. We\'ll provide an expert treatment plan instantly.' : 'Enter your details to find government schemes and subsidies you are eligible for.'}
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* Visual Evidence Card */}
-            <div className="bg-surface rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow border border-kisan/5">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="font-display font-semibold text-lg flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-lg bg-kisanLight text-kisan flex items-center justify-center">1</span>
-                  Crop Photo
-                </h2>
-                {imagePreview && (
-                  <button type="button" onClick={removeImage} className="text-sm font-semibold text-danger hover:bg-danger/10 px-3 py-1 rounded-full transition-colors">
-                    Remove
-                  </button>
+            {/* Visual Evidence Card (Crop Doctor ONLY) */}
+            {activeTab === 'crop' && (
+              <div className="bg-surface rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow border border-kisan/5">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="font-display font-semibold text-lg flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-kisanLight text-kisan flex items-center justify-center">1</span>
+                    Crop Photo
+                  </h2>
+                  {imagePreview && (
+                    <button type="button" onClick={removeImage} className="text-sm font-semibold text-danger hover:bg-danger/10 px-3 py-1 rounded-full transition-colors">
+                      Remove
+                    </button>
+                  )}
+                </div>
+                
+                {!imagePreview ? (
+                  <label className="flex flex-col items-center justify-center w-full h-48 bg-bg/50 border-2 border-dashed border-kisan/20 rounded-xl cursor-pointer hover:bg-kisanLight hover:border-kisan/40 transition-colors">
+                    <Upload className="w-8 h-8 text-kisan mb-3" />
+                    <span className="font-semibold text-kisan">Tap to upload photo</span>
+                    <span className="text-sm text-soil mt-1">Make sure the affected area is clearly visible</span>
+                    <input type="file" className="hide-file-input" accept="image/*" onChange={handleImageChange} />
+                  </label>
+                ) : (
+                  <div className="relative w-full h-64 rounded-xl overflow-hidden border border-kisan/10">
+                    <img src={imagePreview} alt="Crop" className="w-full h-full object-cover" />
+                  </div>
                 )}
               </div>
-              
-              {!imagePreview ? (
-                <label className="flex flex-col items-center justify-center w-full h-48 bg-bg/50 border-2 border-dashed border-kisan/20 rounded-xl cursor-pointer hover:bg-kisanLight hover:border-kisan/40 transition-colors">
-                  <Upload className="w-8 h-8 text-kisan mb-3" />
-                  <span className="font-semibold text-kisan">Tap to upload photo</span>
-                  <span className="text-sm text-soil mt-1">Make sure the affected area is clearly visible</span>
-                  <input type="file" className="hide-file-input" accept="image/*" onChange={handleImageChange} />
-                </label>
-              ) : (
-                <div className="relative w-full h-64 rounded-xl overflow-hidden border border-kisan/10">
-                  <img src={imagePreview} alt="Crop" className="w-full h-full object-cover" />
-                </div>
-              )}
-            </div>
+            )}
 
             {/* Context Card */}
             <div className="bg-surface rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow border border-kisan/5">
               <h2 className="font-display font-semibold text-lg flex items-center gap-2 mb-5">
-                <span className="w-8 h-8 rounded-lg bg-kisanLight text-kisan flex items-center justify-center">2</span>
+                <span className="w-8 h-8 rounded-lg bg-kisanLight text-kisan flex items-center justify-center">
+                  {activeTab === 'crop' ? '2' : '1'}
+                </span>
                 Basic Details
               </h2>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className="block text-sm font-semibold text-charcoal mb-2 flex items-center gap-1">
-                    <SproutIcon className="w-4 h-4 text-soil" /> Crop Name
+                    <SproutIcon className="w-4 h-4 text-soil" /> {activeTab === 'crop' ? 'Crop Name' : 'Primary Crop'}
                   </label>
                   <input 
                     type="text" 
@@ -216,86 +329,47 @@ function App() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-charcoal mb-2 flex items-center gap-1">
-                    <MapPin className="w-4 h-4 text-soil" /> Location
+                    <MapPin className="w-4 h-4 text-soil" /> {activeTab === 'crop' ? 'Location' : 'State / District'}
                   </label>
                   <input 
                     type="text" 
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     className="w-full bg-bg border border-kisan/20 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kisan/30 transition-all font-medium"
-                    placeholder="e.g. Prayagraj"
+                    placeholder={activeTab === 'crop' ? 'e.g. Prayagraj' : 'e.g. Uttar Pradesh'}
                   />
                 </div>
               </div>
+
+              {activeTab === 'yojana' && (
+                <div>
+                  <label className="block text-sm font-semibold text-charcoal mb-2 flex items-center gap-1">
+                    <Landmark className="w-4 h-4 text-soil" /> Land Size
+                  </label>
+                  <select
+                    value={landSize}
+                    onChange={(e) => setLandSize(e.target.value)}
+                    className="w-full bg-bg border border-kisan/20 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kisan/30 transition-all font-medium"
+                  >
+                    <option value="Marginal (< 1 Hectare)">Marginal (&lt; 1 Hectare)</option>
+                    <option value="Small (1-2 Hectares)">Small (1-2 Hectares)</option>
+                    <option value="Medium (2-10 Hectares)">Medium (2-10 Hectares)</option>
+                    <option value="Large (> 10 Hectares)">Large (&gt; 10 Hectares)</option>
+                  </select>
+                </div>
+              )}
             </div>
 
-            {/* Voice & Symptoms Card */}
+            {/* Voice & Description Card */}
             <div className="bg-surface rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow border border-kisan/5">
               <h2 className="font-display font-semibold text-lg flex items-center gap-2 mb-5">
-                <span className="w-8 h-8 rounded-lg bg-kisanLight text-kisan flex items-center justify-center">3</span>
-                Symptoms
+                <span className="w-8 h-8 rounded-lg bg-kisanLight text-kisan flex items-center justify-center">
+                  {activeTab === 'crop' ? '3' : '2'}
+                </span>
+                {activeTab === 'crop' ? 'Symptoms' : 'Additional Details'}
               </h2>
               
-              {/* Voice Recorder - Very Prominent */}
-              <div className={`rounded-xl p-4 mb-5 border-2 transition-all ${isRecording ? 'border-danger bg-danger/5' : audioBlob ? 'border-kisan bg-kisanLight' : 'border-kisan/10 bg-bg'}`}>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  
-                  <div className="flex items-center gap-3">
-                    {isRecording ? (
-                      <>
-                        <div className="relative flex items-center justify-center w-10 h-10">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-danger opacity-40"></span>
-                          <Mic className="relative w-6 h-6 text-danger animate-pulse" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-danger">Recording Voice Note...</p>
-                          <p className="text-sm font-medium text-danger/80">{formatTime(recordingTime)}</p>
-                        </div>
-                      </>
-                    ) : audioBlob ? (
-                      <>
-                        <div className="w-10 h-10 rounded-full bg-kisan text-white flex items-center justify-center">
-                          <AudioLines className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-kisan">Voice Note Attached</p>
-                          <p className="text-sm font-medium text-kisan/80">{formatTime(recordingTime)}</p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="w-10 h-10 rounded-full bg-harvestLight text-harvest flex items-center justify-center">
-                          <Mic className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-charcoal">Use Voice (Recommended)</p>
-                          <p className="text-sm font-medium text-soil">Speak in Hindi or English</p>
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  <div className="flex gap-2 w-full sm:w-auto">
-                    {isRecording ? (
-                      <button type="button" onClick={stopRecording} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-danger text-white px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-red-700 transition-colors">
-                        <Square className="w-4 h-4 fill-current" /> Stop
-                      </button>
-                    ) : (
-                      <>
-                        {audioBlob && (
-                          <button type="button" onClick={clearAudio} className="p-3 text-soil hover:bg-danger/10 hover:text-danger rounded-xl transition-colors" title="Delete voice note">
-                            <X className="w-5 h-5" />
-                          </button>
-                        )}
-                        <button type="button" onClick={startRecording} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-kisan text-white px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-green-800 transition-colors">
-                          <Mic className="w-5 h-5" /> {audioBlob ? 'Record Again' : 'Record'}
-                        </button>
-                      </>
-                    )}
-                  </div>
-
-                </div>
-              </div>
+              {renderVoiceRecorder()}
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
@@ -310,7 +384,7 @@ function App() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full bg-bg border border-kisan/20 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-kisan/30 transition-all min-h-[100px] resize-none font-medium placeholder:text-soil/70"
-                placeholder="Describe any spots, color changes, or pests you noticed..."
+                placeholder={activeTab === 'crop' ? 'Describe any spots, color changes, or pests you noticed...' : 'Any other details about your farming methods, category, or needs...'}
               />
             </div>
 
@@ -322,10 +396,10 @@ function App() {
             >
               {loading ? (
                 <>
-                  <Activity className="w-6 h-6 animate-pulse" /> Analyzing Symptoms...
+                  <Activity className="w-6 h-6 animate-pulse" /> {activeTab === 'crop' ? 'Analyzing Symptoms...' : 'Finding Schemes...'}
                 </>
               ) : (
-                "Get Treatment Plan"
+                activeTab === 'crop' ? 'Get Treatment Plan' : 'Discover Schemes'
               )}
             </button>
             
@@ -345,21 +419,35 @@ function App() {
             
             {!result && !loading && (
               <div className="bg-kisanLight/50 border-2 border-dashed border-kisan/20 rounded-3xl p-10 flex flex-col items-center justify-center text-center min-h-[400px]">
-                <ShieldCheck className="w-16 h-16 text-kisan/30 mb-4" />
-                <h3 className="font-display font-bold text-xl text-kisan mb-2">Expert Diagnosis</h3>
-                <p className="text-soil">Fill out the details on the left and tap the button to generate an AI-powered treatment plan.</p>
+                {activeTab === 'crop' ? (
+                  <>
+                    <ShieldCheck className="w-16 h-16 text-kisan/30 mb-4" />
+                    <h3 className="font-display font-bold text-xl text-kisan mb-2">Expert Diagnosis</h3>
+                    <p className="text-soil">Fill out the details on the left and tap the button to generate an AI-powered treatment plan.</p>
+                  </>
+                ) : (
+                  <>
+                    <ScrollText className="w-16 h-16 text-kisan/30 mb-4" />
+                    <h3 className="font-display font-bold text-xl text-kisan mb-2">Government Schemes</h3>
+                    <p className="text-soil">Fill out your details to see a personalized list of agricultural subsidies and benefits.</p>
+                  </>
+                )}
               </div>
             )}
 
             {loading && (
               <div className="bg-surface rounded-3xl p-10 flex flex-col items-center justify-center text-center min-h-[400px] shadow-card border border-kisan/5">
                 <div className="w-16 h-16 border-4 border-kisan/20 border-t-kisan rounded-full animate-spin mb-6"></div>
-                <h3 className="font-display font-bold text-xl text-charcoal mb-2">Consulting AI Doctor</h3>
-                <p className="text-soil">Analyzing photo and cross-referencing agricultural databases...</p>
+                <h3 className="font-display font-bold text-xl text-charcoal mb-2">
+                  {activeTab === 'crop' ? 'Consulting AI Doctor' : 'Searching Policy Database'}
+                </h3>
+                <p className="text-soil">
+                  {activeTab === 'crop' ? 'Analyzing photo and cross-referencing agricultural databases...' : 'Matching your profile with current government initiatives...'}
+                </p>
               </div>
             )}
 
-            {result && !loading && (
+            {result && !loading && activeTab === 'crop' && (
               <div className="bg-kisan text-white rounded-3xl p-8 shadow-card-hover overflow-hidden relative">
                 {/* Decorative background shape */}
                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
@@ -404,6 +492,62 @@ function App() {
               </div>
             )}
 
+            {result && !loading && activeTab === 'yojana' && result.schemes && (
+              <div className="space-y-4">
+                {/* Audio Summary for top scheme */}
+                {result.audio_b64 && (
+                   <div className="bg-surface rounded-2xl p-4 shadow-sm border border-kisan/10 flex items-center gap-4">
+                     <div className="w-12 h-12 rounded-full bg-kisan text-white flex items-center justify-center shrink-0 shadow-sm">
+                        <AudioLines className="w-6 h-6" />
+                     </div>
+                     <div className="flex-1">
+                        <p className="text-sm font-bold text-charcoal mb-1">Listen to Summary</p>
+                        <audio controls className="w-full h-8 opacity-90 custom-audio">
+                          <source src={`data:audio/wav;base64,${result.audio_b64}`} type="audio/wav" />
+                        </audio>
+                     </div>
+                   </div>
+                )}
+
+                {/* Map over the schemes */}
+                {result.schemes.map((scheme, idx) => (
+                  <div key={idx} className="bg-surface rounded-3xl p-6 shadow-card hover:shadow-card-hover transition-shadow border border-kisan/5">
+                    <div className="flex items-start justify-between mb-4 gap-4">
+                      <h3 className="font-display font-bold text-xl text-kisan leading-tight">
+                        {scheme.scheme_name}
+                      </h3>
+                      <div className="bg-harvestLight text-harvest p-2 rounded-xl shrink-0">
+                        <Landmark className="w-5 h-5" />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="flex gap-3 items-start">
+                        <CheckCircle2 className="w-5 h-5 text-kisan shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-bold text-soil uppercase mb-1">Eligibility</p>
+                          <p className="text-sm font-medium text-charcoal">{scheme.eligibility}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-3 items-start">
+                        <Sun className="w-5 h-5 text-harvest shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-bold text-soil uppercase mb-1">Benefits</p>
+                          <p className="text-sm font-medium text-charcoal">{scheme.benefits}</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-bg rounded-xl p-4 mt-2">
+                        <p className="text-xs font-bold text-soil uppercase mb-1">How to Apply</p>
+                        <p className="text-sm font-medium text-charcoal">{scheme.how_to_apply}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
           </div>
         </div>
 
@@ -412,7 +556,7 @@ function App() {
   );
 }
 
-// Temporary internal component for the sprout icon
+// Internal component for the sprout icon
 function SproutIcon(props) {
   return (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
