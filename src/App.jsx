@@ -355,20 +355,17 @@ function App() {
               >
                 <div className="h-48 md:h-56 overflow-hidden relative">
                   <img src="/crop_doctor_logo.jpg" alt="Crop Doctor" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-black/40 backdrop-blur-md border border-white/20 rounded-xl p-4 inline-block">
-                      <ShieldCheck className="w-8 h-8 mb-2 text-kisan drop-shadow-md" />
-                      <h3 className="text-2xl font-display font-bold text-white tracking-wide">Crop Doctor</h3>
-                    </div>
-                  </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ShieldCheck className="w-6 h-6 text-kisan" />
+                    <h3 className="text-2xl font-display font-bold text-charcoal">Crop Doctor</h3>
+                  </div>
                   <p className="text-soil font-medium text-base mb-6 flex-1 leading-relaxed">
                     Upload a photo of your affected crop for an instant AI-powered diagnosis and treatment plan.
                   </p>
                   <div className="flex items-center text-kisan font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
-                    Access Service <ChevronRight className="w-5 h-5 ml-1" />
+                    Access Crop Doctor <ChevronRight className="w-5 h-5 ml-1" />
                   </div>
                 </div>
               </div>
@@ -380,20 +377,17 @@ function App() {
               >
                 <div className="h-48 md:h-56 overflow-hidden relative">
                   <img src="/yojana_radar_logo.jpg" alt="Yojana Radar" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-black/40 backdrop-blur-md border border-white/20 rounded-xl p-4 inline-block">
-                      <Landmark className="w-8 h-8 mb-2 text-harvest drop-shadow-md" />
-                      <h3 className="text-2xl font-display font-bold text-white tracking-wide">Yojana Radar</h3>
-                    </div>
-                  </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Landmark className="w-6 h-6 text-harvest" />
+                    <h3 className="text-2xl font-display font-bold text-charcoal">Yojana Radar</h3>
+                  </div>
                   <p className="text-soil font-medium text-base mb-6 flex-1 leading-relaxed">
                     Discover government schemes, subsidies, and financial aid you are eligible for based on your profile.
                   </p>
                   <div className="flex items-center text-harvest font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
-                    Access Service <ChevronRight className="w-5 h-5 ml-1" />
+                    Access Yojana Radar <ChevronRight className="w-5 h-5 ml-1" />
                   </div>
                 </div>
               </div>
@@ -405,20 +399,17 @@ function App() {
               >
                 <div className="h-48 md:h-56 overflow-hidden relative">
                   <img src="/mandi_prices_logo.jpg" alt="Mandi Prices" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-black/40 backdrop-blur-md border border-white/20 rounded-xl p-4 inline-block">
-                      <TrendingUp className="w-8 h-8 mb-2 text-orange-400 drop-shadow-md" />
-                      <h3 className="text-2xl font-display font-bold text-white tracking-wide">Mandi Prices</h3>
-                    </div>
-                  </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
+                  <div className="flex items-center gap-2 mb-3">
+                    <TrendingUp className="w-6 h-6 text-orange-500" />
+                    <h3 className="text-2xl font-display font-bold text-charcoal">Mandi Prices</h3>
+                  </div>
                   <p className="text-soil font-medium text-base mb-6 flex-1 leading-relaxed">
                     Check live simulated APMC mandi prices for your crops across India before selling.
                   </p>
                   <div className="flex items-center text-orange-600 font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
-                    Access Service <ChevronRight className="w-5 h-5 ml-1" />
+                    Access Mandi Prices <ChevronRight className="w-5 h-5 ml-1" />
                   </div>
                 </div>
               </div>
@@ -430,20 +421,17 @@ function App() {
               >
                 <div className="h-48 md:h-56 overflow-hidden relative">
                   <img src="/weather_advisory_logo.jpg" alt="Weather Advisory" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-black/40 backdrop-blur-md border border-white/20 rounded-xl p-4 inline-block">
-                      <CloudSun className="w-8 h-8 mb-2 text-blue-400 drop-shadow-md" />
-                      <h3 className="text-2xl font-display font-bold text-white tracking-wide">Weather Advisory</h3>
-                    </div>
-                  </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
+                  <div className="flex items-center gap-2 mb-3">
+                    <CloudSun className="w-6 h-6 text-blue-500" />
+                    <h3 className="text-2xl font-display font-bold text-charcoal">Weather Advisory</h3>
+                  </div>
                   <p className="text-soil font-medium text-base mb-6 flex-1 leading-relaxed">
                     Get localized weather forecasts and farming advisories specific to your crop lifecycle.
                   </p>
                   <div className="flex items-center text-blue-600 font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
-                    Access Service <ChevronRight className="w-5 h-5 ml-1" />
+                    Access Weather Advisory <ChevronRight className="w-5 h-5 ml-1" />
                   </div>
                 </div>
               </div>
