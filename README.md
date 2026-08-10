@@ -1,16 +1,50 @@
-# React + Vite
+# Kisan Mitra - AI Agricultural Assistant (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+![React](https://img.shields.io/badge/React-18.3-blue)
+![Vite](https://img.shields.io/badge/Vite-5.4-purple)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-cyan)
 
-Currently, two official plugins are available:
+The interactive web portal for **Kisan Mitra**, built for the **Build with Gemma: TFUG Prayagraj [AI Prayagraj]** hackathon. 
+Kisan Mitra is designed to empower Indian farmers with cutting-edge AI, acting as a highly accessible, multi-lingual agricultural assistant.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🌟 The GenAI for Good Track
 
-## React Compiler
+This project was built to address high-impact challenges in Indian agriculture, providing farmers with instant, AI-backed answers to their most critical daily problems:
+- **What disease is killing my crop?** (Crop Doctor)
+- **What government subsidies am I eligible for?** (Yojana Radar)
+- **Should I sell my harvest today or wait?** (Mandi Prices)
+- **Will it rain tomorrow?** (Weather Advisory)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🖥️ UI & UX Design
+The platform features a highly accessible, public-service inspired theme (reminiscent of official national portals) to build trust with users. 
+Key features include:
+- **Voice-First Input**: Recognizes that literacy or typing can be a barrier; farmers can simply speak in Hindi/English to get answers.
+- **Text-to-Speech (TTS)**: The AI's responses are spoken back to the user aloud in Hindi for immediate comprehension.
+- **Responsive Dashboard**: A 2-column masonry layout optimized for both desktop and mobile devices.
 
-## Expanding the Oxlint configuration
+## ⚙️ Setup Instructions
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+### 1. Clone the repository
+```bash
+git clone https://github.com/pranaysb/kisan-mitra-web.git
+cd kisan-mitra-web
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Connect the Backend
+Create a `.env` file in the root directory and link it to the FastAPI backend:
+```env
+VITE_API_URL=https://kisan-mitra-backend.onrender.com
+```
+
+### 4. Run the Development Server
+```bash
+npm run dev
+```
+
+---
+*Designed & Developed for the Build with Gemma Hackathon 2026.*
