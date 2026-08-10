@@ -355,10 +355,12 @@ function App() {
               >
                 <div className="h-48 md:h-56 overflow-hidden relative">
                   <img src="/crop_doctor_logo.jpg" alt="Crop Doctor" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4 text-white drop-shadow-md">
-                    <ShieldCheck className="w-8 h-8 mb-2 text-kisan drop-shadow-lg" />
-                    <h3 className="text-2xl font-display font-bold tracking-wide">Crop Doctor</h3>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-black/40 backdrop-blur-md border border-white/20 rounded-xl p-4 inline-block">
+                      <ShieldCheck className="w-8 h-8 mb-2 text-kisan drop-shadow-md" />
+                      <h3 className="text-2xl font-display font-bold text-white tracking-wide">Crop Doctor</h3>
+                    </div>
                   </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
@@ -378,10 +380,12 @@ function App() {
               >
                 <div className="h-48 md:h-56 overflow-hidden relative">
                   <img src="/yojana_radar_logo.jpg" alt="Yojana Radar" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4 text-white drop-shadow-md">
-                    <Landmark className="w-8 h-8 mb-2 text-harvest drop-shadow-lg" />
-                    <h3 className="text-2xl font-display font-bold tracking-wide">Yojana Radar</h3>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-black/40 backdrop-blur-md border border-white/20 rounded-xl p-4 inline-block">
+                      <Landmark className="w-8 h-8 mb-2 text-harvest drop-shadow-md" />
+                      <h3 className="text-2xl font-display font-bold text-white tracking-wide">Yojana Radar</h3>
+                    </div>
                   </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
@@ -401,10 +405,12 @@ function App() {
               >
                 <div className="h-48 md:h-56 overflow-hidden relative">
                   <img src="/mandi_prices_logo.jpg" alt="Mandi Prices" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4 text-white drop-shadow-md">
-                    <TrendingUp className="w-8 h-8 mb-2 text-orange-400 drop-shadow-lg" />
-                    <h3 className="text-2xl font-display font-bold tracking-wide">Mandi Prices</h3>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-black/40 backdrop-blur-md border border-white/20 rounded-xl p-4 inline-block">
+                      <TrendingUp className="w-8 h-8 mb-2 text-orange-400 drop-shadow-md" />
+                      <h3 className="text-2xl font-display font-bold text-white tracking-wide">Mandi Prices</h3>
+                    </div>
                   </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
@@ -424,10 +430,12 @@ function App() {
               >
                 <div className="h-48 md:h-56 overflow-hidden relative">
                   <img src="/weather_advisory_logo.jpg" alt="Weather Advisory" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4 text-white drop-shadow-md">
-                    <CloudSun className="w-8 h-8 mb-2 text-blue-400 drop-shadow-lg" />
-                    <h3 className="text-2xl font-display font-bold tracking-wide">Weather Advisory</h3>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-black/40 backdrop-blur-md border border-white/20 rounded-xl p-4 inline-block">
+                      <CloudSun className="w-8 h-8 mb-2 text-blue-400 drop-shadow-md" />
+                      <h3 className="text-2xl font-display font-bold text-white tracking-wide">Weather Advisory</h3>
+                    </div>
                   </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
