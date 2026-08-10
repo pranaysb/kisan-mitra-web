@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Upload, Mic, Square, X, Leaf, Info, Activity, ShieldCheck, Sun, MapPin, AudioLines, ScrollText, Landmark, CheckCircle2, ChevronRight, Phone, Mail } from 'lucide-react';
+import { Upload, Mic, Square, X, Leaf, Info, Activity, ShieldCheck, Sun, MapPin, AudioLines, ScrollText, Landmark, CheckCircle2, ChevronRight, Phone, Mail, ArrowLeft, TrendingUp, CloudSun } from 'lucide-react';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('crop'); // 'crop' or 'yojana'
+  const [activeView, setActiveView] = useState('home'); // 'home', 'crop', or 'yojana'
+  
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [location, setLocation] = useState('');
@@ -36,7 +37,7 @@ function App() {
   useEffect(() => {
     setResult(null);
     setError(null);
-  }, [activeTab]);
+  }, [activeView]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -100,11 +101,11 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (activeTab === 'crop' && !imageFile) {
+    if (activeView === 'crop' && !imageFile) {
       setError("Please add a photo of your crop to continue.");
       return;
     }
-    if (activeTab === 'yojana' && (!location || !cropName)) {
+    if (activeView === 'yojana' && (!location || !cropName)) {
       setError("Please enter your state/location and crop name.");
       return;
     }
@@ -120,7 +121,7 @@ function App() {
     if (audioBlob) formData.append('audio', audioBlob, 'voice.wav');
 
     let endpoint = '';
-    if (activeTab === 'crop') {
+    if (activeView === 'crop') {
         formData.append('image', imageFile);
         endpoint = '/diagnose';
     } else {
@@ -242,10 +243,12 @@ function App() {
 
       {/* 2. Main Official Header */}
       <header className="bg-white shadow-sm z-40 sticky top-0 border-b border-kisan/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
-          
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
           {/* Logo Area */}
-          <div className="flex items-center gap-4">
+          <div 
+            className="flex items-center gap-4 cursor-pointer"
+            onClick={() => setActiveView('home')}
+          >
             <img src="/emblem.jpg" alt="National Emblem" className="h-16 w-16 object-contain mix-blend-multiply" />
             <div className="border-l-2 border-kisan/20 pl-4">
               <h1 className="font-display font-bold text-2xl text-[#1b263b] tracking-tight leading-tight">
@@ -256,21 +259,14 @@ function App() {
               </p>
             </div>
           </div>
-
-          {/* Module Navigation */}
-          <nav className="flex items-center bg-bg rounded-xl p-1 border border-kisan/10 w-full md:w-auto">
+          {activeView !== 'home' && (
             <button 
-              onClick={() => setActiveTab('crop')}
-              className={`flex-1 md:w-40 py-2.5 text-sm font-bold transition-all rounded-lg flex items-center justify-center gap-2 ${activeTab === 'crop' ? 'bg-white text-kisan shadow-sm ring-1 ring-black/5' : 'text-soil hover:text-charcoal'}`}>
-              <ShieldCheck className="w-4 h-4" /> Crop Doctor
+              onClick={() => setActiveView('home')}
+              className="hidden md:flex items-center gap-2 text-sm font-bold text-soil hover:text-charcoal bg-bg px-4 py-2 rounded-lg border border-kisan/10 hover:border-kisan/30 transition-all"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back to Services
             </button>
-            <button 
-              onClick={() => setActiveTab('yojana')}
-              className={`flex-1 md:w-40 py-2.5 text-sm font-bold transition-all rounded-lg flex items-center justify-center gap-2 ${activeTab === 'yojana' ? 'bg-white text-kisan shadow-sm ring-1 ring-black/5' : 'text-soil hover:text-charcoal'}`}>
-              <Landmark className="w-4 h-4" /> Yojana Radar
-            </button>
-          </nav>
-
+          )}
         </div>
       </header>
 
@@ -287,337 +283,438 @@ function App() {
         </div>
       </div>
 
-      {/* 4. Hero Banner Segment */}
-      <div className="relative w-full h-[250px] md:h-[350px] bg-charcoal overflow-hidden">
-        <img src="/agri_hero.jpg" alt="Indian Agriculture" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1b263b]/90 via-[#1b263b]/60 to-transparent"></div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 h-full flex flex-col justify-center">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-harvest/20 border border-harvest/30 text-harvest px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 backdrop-blur-sm">
-              <Activity className="w-3.5 h-3.5" /> AI-Powered Agriculture
+      {/* 4. Hero Banner Segment (Only on Home) */}
+      {activeView === 'home' && (
+        <>
+          <div className="relative w-full h-[250px] md:h-[350px] bg-charcoal overflow-hidden">
+            <img src="/agri_hero.jpg" alt="Indian Agriculture" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1b263b]/90 via-[#1b263b]/60 to-transparent"></div>
+            
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 h-full flex flex-col justify-center">
+              <div className="max-w-2xl">
+                <div className="inline-flex items-center gap-2 bg-harvest/20 border border-harvest/30 text-harvest px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 backdrop-blur-sm">
+                  <Activity className="w-3.5 h-3.5" /> AI-Powered Agriculture
+                </div>
+                <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4 leading-tight">
+                  Empowering Farmers with <span className="text-harvest">Digital Solutions</span>
+                </h2>
+                <p className="text-white/80 text-lg max-w-xl font-medium">
+                  Access instant crop disease diagnosis and discover government schemes you are eligible for, directly from your phone.
+                </p>
+              </div>
             </div>
-            <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4 leading-tight">
-              Empowering Farmers with <span className="text-harvest">Digital Solutions</span>
-            </h2>
-            <p className="text-white/80 text-lg max-w-xl font-medium">
-              Access instant crop disease diagnosis and discover government schemes you are eligible for, directly from your phone.
-            </p>
           </div>
-        </div>
-      </div>
 
-      {/* Stats Bar */}
-      <div className="bg-white border-b border-kisan/10 shadow-sm relative z-10 -mt-6 mx-4 sm:mx-auto max-w-5xl rounded-xl overflow-hidden flex flex-wrap divide-y sm:divide-y-0 sm:divide-x divide-kisan/10">
-        <div className="flex-1 min-w-[150px] p-4 text-center bg-white/50 backdrop-blur-md">
-          <div className="text-2xl font-display font-bold text-kisan">2.4M+</div>
-          <div className="text-xs font-bold text-soil uppercase tracking-wider">Farmers Registered</div>
-        </div>
-        <div className="flex-1 min-w-[150px] p-4 text-center bg-white/50 backdrop-blur-md">
-          <div className="text-2xl font-display font-bold text-kisan">150+</div>
-          <div className="text-xs font-bold text-soil uppercase tracking-wider">Active Yojanas</div>
-        </div>
-        <div className="flex-1 min-w-[150px] p-4 text-center bg-white/50 backdrop-blur-md">
-          <div className="text-2xl font-display font-bold text-kisan">98%</div>
-          <div className="text-xs font-bold text-soil uppercase tracking-wider">Diagnosis Accuracy</div>
-        </div>
-      </div>
+          {/* Stats Bar */}
+          <div className="bg-white border-b border-kisan/10 shadow-sm relative z-10 -mt-6 mx-4 sm:mx-auto max-w-5xl rounded-xl overflow-hidden flex flex-wrap divide-y sm:divide-y-0 sm:divide-x divide-kisan/10">
+            <div className="flex-1 min-w-[150px] p-4 text-center bg-white/50 backdrop-blur-md">
+              <div className="text-2xl font-display font-bold text-kisan">2.4M+</div>
+              <div className="text-xs font-bold text-soil uppercase tracking-wider">Farmers Registered</div>
+            </div>
+            <div className="flex-1 min-w-[150px] p-4 text-center bg-white/50 backdrop-blur-md">
+              <div className="text-2xl font-display font-bold text-kisan">150+</div>
+              <div className="text-xs font-bold text-soil uppercase tracking-wider">Active Yojanas</div>
+            </div>
+            <div className="flex-1 min-w-[150px] p-4 text-center bg-white/50 backdrop-blur-md">
+              <div className="text-2xl font-display font-bold text-kisan">98%</div>
+              <div className="text-xs font-bold text-soil uppercase tracking-wider">Diagnosis Accuracy</div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* 5. Main Content Area */}
-      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 py-12 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 py-12 flex-1 w-full">
         
-        {/* Left Column: Form */}
-        <div className="lg:col-span-7 space-y-6">
-          
-          <div className="mb-6 flex items-center justify-between border-b-2 border-kisan/20 pb-4">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-display font-bold text-charcoal flex items-center gap-2">
-                {activeTab === 'crop' ? <ShieldCheck className="w-8 h-8 text-kisan" /> : <Landmark className="w-8 h-8 text-kisan" />}
-                {activeTab === 'crop' ? 'Crop Diagnosis Service' : 'Scheme Discovery Service'}
-              </h2>
-              <p className="text-soil mt-1 font-medium">
-                {activeTab === 'crop' ? 'Upload a photo for instant AI analysis.' : 'Find government subsidies you qualify for.'}
+        {/* === HOME DASHBOARD VIEW === */}
+        {activeView === 'home' && (
+          <div className="space-y-8">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-display font-bold text-charcoal">Citizen Services</h2>
+              <div className="w-16 h-1 bg-harvest mx-auto mt-3 rounded-full"></div>
+              <p className="text-soil mt-4 font-medium max-w-2xl mx-auto">
+                Select a service below to get started. All services are completely free and available in multiple languages via voice assistance.
               </p>
             </div>
-            <div className="hidden sm:block text-kisan">
-              <Leaf className="w-10 h-10 opacity-20" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              {/* Service Card 1: Crop Doctor */}
+              <div 
+                onClick={() => setActiveView('crop')}
+                className="group cursor-pointer bg-white rounded-2xl p-8 border border-kisan/10 shadow-sm hover:shadow-xl hover:border-kisan/30 transition-all flex flex-col h-full"
+              >
+                <div className="w-16 h-16 bg-kisan/10 text-kisan rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <ShieldCheck className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-display font-bold text-charcoal mb-3 group-hover:text-kisan transition-colors">Crop Doctor</h3>
+                <p className="text-soil font-medium mb-8 flex-1">
+                  Upload a photo of your affected crop for an instant AI-powered diagnosis. Get a complete treatment plan including chemical controls.
+                </p>
+                <div className="flex items-center text-kisan font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
+                  Access Service <ChevronRight className="w-4 h-4 ml-1" />
+                </div>
+              </div>
+
+              {/* Service Card 2: Yojana Radar */}
+              <div 
+                onClick={() => setActiveView('yojana')}
+                className="group cursor-pointer bg-white rounded-2xl p-8 border border-kisan/10 shadow-sm hover:shadow-xl hover:border-kisan/30 transition-all flex flex-col h-full"
+              >
+                <div className="w-16 h-16 bg-harvest/20 text-harvest rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Landmark className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-display font-bold text-charcoal mb-3 group-hover:text-harvest transition-colors">Yojana Radar</h3>
+                <p className="text-soil font-medium mb-8 flex-1">
+                  Discover government schemes, subsidies, and financial aid you are eligible for based on your location and land profile.
+                </p>
+                <div className="flex items-center text-harvest font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
+                  Access Service <ChevronRight className="w-4 h-4 ml-1" />
+                </div>
+              </div>
+
+              {/* Service Card 3: Market Prices (Coming Soon) */}
+              <div className="bg-bg/50 rounded-2xl p-8 border border-kisan/5 relative overflow-hidden flex flex-col h-full opacity-70">
+                <div className="absolute top-4 right-4 bg-charcoal text-white text-[10px] font-bold uppercase px-2 py-1 rounded">Coming Soon</div>
+                <div className="w-16 h-16 bg-soil/10 text-soil rounded-xl flex items-center justify-center mb-6">
+                  <TrendingUp className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-display font-bold text-charcoal mb-3">Mandi Prices</h3>
+                <p className="text-soil font-medium mb-8 flex-1">
+                  Check live APMC mandi prices for your crops across India. Get market trend analysis before selling your harvest.
+                </p>
+                <div className="flex items-center text-soil/50 font-bold text-sm uppercase tracking-wider">
+                  Unavailable <ChevronRight className="w-4 h-4 ml-1" />
+                </div>
+              </div>
+
+              {/* Service Card 4: Weather Advisory (Coming Soon) */}
+              <div className="bg-bg/50 rounded-2xl p-8 border border-kisan/5 relative overflow-hidden flex flex-col h-full opacity-70">
+                <div className="absolute top-4 right-4 bg-charcoal text-white text-[10px] font-bold uppercase px-2 py-1 rounded">Coming Soon</div>
+                <div className="w-16 h-16 bg-soil/10 text-soil rounded-xl flex items-center justify-center mb-6">
+                  <CloudSun className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-display font-bold text-charcoal mb-3">Weather Advisory</h3>
+                <p className="text-soil font-medium mb-8 flex-1">
+                  Get localized weather forecasts and farming advisories specific to your crop lifecycle and current climate conditions.
+                </p>
+                <div className="flex items-center text-soil/50 font-bold text-sm uppercase tracking-wider">
+                  Unavailable <ChevronRight className="w-4 h-4 ml-1" />
+                </div>
+              </div>
+
             </div>
           </div>
+        )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+        {/* === MODULE VIEW (CROP DOCTOR OR YOJANA RADAR) === */}
+        {activeView !== 'home' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            {/* Visual Evidence Card (Crop Doctor ONLY) */}
-            {activeTab === 'crop' && (
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-kisan/10 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-kisan"></div>
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-bold text-lg text-charcoal">Step 1: Upload Crop Photo</h3>
-                  {imagePreview && (
-                    <button type="button" onClick={removeImage} className="text-sm font-semibold text-danger hover:bg-danger/10 px-3 py-1 rounded-full transition-colors">
-                      Remove
-                    </button>
-                  )}
-                </div>
-                
-                {!imagePreview ? (
-                  <label className="flex flex-col items-center justify-center w-full h-48 bg-bg/50 border-2 border-dashed border-kisan/30 rounded-xl cursor-pointer hover:bg-kisanLight hover:border-kisan transition-colors">
-                    <Upload className="w-8 h-8 text-kisan mb-3" />
-                    <span className="font-semibold text-kisan">Click to browse or take a photo</span>
-                    <span className="text-sm text-soil mt-1">Make sure the affected area is clearly visible</span>
-                    <input type="file" className="hide-file-input" accept="image/*" onChange={handleImageChange} />
-                  </label>
-                ) : (
-                  <div className="relative w-full h-64 rounded-xl overflow-hidden border border-kisan/10">
-                    <img src={imagePreview} alt="Crop" className="w-full h-full object-cover" />
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="lg:col-span-12 mb-2 sm:hidden">
+              <button 
+                onClick={() => setActiveView('home')}
+                className="flex items-center gap-2 text-sm font-bold text-soil hover:text-charcoal transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+              </button>
+            </div>
 
-            {/* Context Card */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-kisan/10 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-kisan"></div>
-              <h3 className="font-bold text-lg text-charcoal mb-4">
-                {activeTab === 'crop' ? 'Step 2: Basic Details' : 'Step 1: Farmer Details'}
-              </h3>
+            {/* Left Column: Form */}
+            <div className="lg:col-span-7 space-y-6">
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+              <div className="mb-6 flex items-center justify-between border-b-2 border-kisan/20 pb-4">
                 <div>
-                  <label className="block text-sm font-semibold text-charcoal mb-2 flex items-center gap-1">
-                    <Leaf className="w-4 h-4 text-soil" /> {activeTab === 'crop' ? 'Crop Name *' : 'Primary Crop *'}
-                  </label>
-                  <input 
-                    type="text" 
-                    value={cropName}
-                    onChange={(e) => setCropName(e.target.value)}
-                    required
-                    className="w-full bg-bg border border-kisan/20 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kisan transition-all font-medium"
-                    placeholder="e.g. Wheat, Tomato"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-charcoal mb-2 flex items-center gap-1">
-                    <MapPin className="w-4 h-4 text-soil" /> {activeTab === 'crop' ? 'District / Location *' : 'State / District *'}
-                  </label>
-                  <input 
-                    type="text" 
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    required
-                    className="w-full bg-bg border border-kisan/20 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kisan transition-all font-medium"
-                    placeholder={activeTab === 'crop' ? 'e.g. Prayagraj' : 'e.g. Uttar Pradesh'}
-                  />
-                </div>
-              </div>
-
-              {activeTab === 'yojana' && (
-                <div>
-                  <label className="block text-sm font-semibold text-charcoal mb-2 flex items-center gap-1">
-                    <CheckCircle2 className="w-4 h-4 text-soil" /> Land Holding Size *
-                  </label>
-                  <select
-                    value={landSize}
-                    onChange={(e) => setLandSize(e.target.value)}
-                    className="w-full bg-bg border border-kisan/20 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kisan transition-all font-medium"
-                  >
-                    <option value="Marginal (< 1 Hectare)">Marginal (&lt; 1 Hectare)</option>
-                    <option value="Small (1-2 Hectares)">Small (1-2 Hectares)</option>
-                    <option value="Medium (2-10 Hectares)">Medium (2-10 Hectares)</option>
-                    <option value="Large (> 10 Hectares)">Large (&gt; 10 Hectares)</option>
-                  </select>
-                </div>
-              )}
-            </div>
-
-            {/* Voice & Description Card */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-kisan/10 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-kisan"></div>
-              <h3 className="font-bold text-lg text-charcoal mb-4">
-                {activeTab === 'crop' ? 'Step 3: Symptoms' : 'Step 2: Additional Needs'}
-              </h3>
-              
-              {renderVoiceRecorder()}
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                  <div className="w-full border-t border-kisan/10"></div>
-                </div>
-                <div className="relative flex justify-center mb-5">
-                  <span className="px-3 bg-white text-sm font-medium text-soil">OR TYPE</span>
-                </div>
-              </div>
-
-              <textarea 
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-bg border border-kisan/20 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-kisan transition-all min-h-[100px] resize-none font-medium placeholder:text-soil/70"
-                placeholder={activeTab === 'crop' ? 'Describe any spots, color changes, or pests you noticed...' : 'Any other details about your farming methods, category, or specific equipment needs...'}
-              />
-            </div>
-
-            {/* Submit Action */}
-            <button 
-              type="submit" 
-              disabled={loading}
-              className="w-full bg-kisan text-white font-display font-bold text-lg py-4 rounded-xl shadow-md hover:bg-green-800 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <Activity className="w-6 h-6 animate-pulse" /> Processing Request...
-                </>
-              ) : (
-                <>
-                  {activeTab === 'crop' ? 'Generate Treatment Plan' : 'Search Database'} <ChevronRight className="w-5 h-5" />
-                </>
-              )}
-            </button>
-            
-            {error && (
-              <div className="bg-danger/10 text-danger p-4 rounded-lg font-medium flex items-start gap-3 border border-danger/20">
-                <Info className="w-5 h-5 shrink-0 mt-0.5" />
-                <p>{error}</p>
-              </div>
-            )}
-
-          </form>
-        </div>
-
-        {/* Right Column: Results */}
-        <div id="results-section" className="lg:col-span-5 relative">
-          <div className="sticky top-28">
-            
-            {/* Header for results section */}
-            <div className="bg-[#1b263b] text-white p-4 rounded-t-xl flex items-center gap-3">
-              <ScrollText className="w-5 h-5 text-harvest" />
-              <h3 className="font-bold text-lg">Official Report</h3>
-            </div>
-
-            <div className="bg-white border-x border-b border-kisan/10 rounded-b-xl shadow-sm p-6 min-h-[400px]">
-              {!result && !loading && (
-                <div className="flex flex-col items-center justify-center text-center h-full opacity-60 py-12">
-                  <div className="w-16 h-16 bg-bg rounded-full flex items-center justify-center mb-4">
-                    <Info className="w-8 h-8 text-soil" />
-                  </div>
-                  <p className="text-soil font-medium max-w-xs">
-                    {activeTab === 'crop' 
-                      ? 'Submit your crop details and photo to receive an AI-generated diagnosis report.' 
-                      : 'Submit your profile to query the national database for applicable agricultural schemes.'}
+                  <h2 className="text-2xl md:text-3xl font-display font-bold text-charcoal flex items-center gap-2">
+                    {activeView === 'crop' ? <ShieldCheck className="w-8 h-8 text-kisan" /> : <Landmark className="w-8 h-8 text-kisan" />}
+                    {activeView === 'crop' ? 'Crop Diagnosis Service' : 'Scheme Discovery Service'}
+                  </h2>
+                  <p className="text-soil mt-1 font-medium">
+                    {activeView === 'crop' ? 'Upload a photo for instant AI analysis.' : 'Find government subsidies you qualify for.'}
                   </p>
                 </div>
-              )}
-
-              {loading && (
-                <div className="flex flex-col items-center justify-center text-center h-full py-12">
-                  <div className="w-12 h-12 border-4 border-kisan/20 border-t-kisan rounded-full animate-spin mb-4"></div>
-                  <h4 className="font-bold text-charcoal mb-1">Processing Data</h4>
-                  <p className="text-sm text-soil">Please wait while we fetch official records...</p>
+                <div className="hidden sm:block text-kisan">
+                  <Leaf className="w-10 h-10 opacity-20" />
                 </div>
-              )}
+              </div>
 
-              {/* Crop Doctor Results */}
-              {result && !loading && activeTab === 'crop' && (
-                <div className="space-y-6">
-                  <div className="border-b border-kisan/10 pb-4">
-                    <p className="text-xs font-bold text-soil uppercase tracking-wider mb-1">Identified Condition</p>
-                    <h2 className="font-display font-bold text-2xl text-danger leading-tight">
-                      {result.disease}
-                    </h2>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                
+                {/* Visual Evidence Card (Crop Doctor ONLY) */}
+                {activeView === 'crop' && (
+                  <div className="bg-white rounded-xl p-6 shadow-sm border border-kisan/10 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-kisan"></div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-bold text-lg text-charcoal">Step 1: Upload Crop Photo</h3>
+                      {imagePreview && (
+                        <button type="button" onClick={removeImage} className="text-sm font-semibold text-danger hover:bg-danger/10 px-3 py-1 rounded-full transition-colors">
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    
+                    {!imagePreview ? (
+                      <label className="flex flex-col items-center justify-center w-full h-48 bg-bg/50 border-2 border-dashed border-kisan/30 rounded-xl cursor-pointer hover:bg-kisanLight hover:border-kisan transition-colors">
+                        <Upload className="w-8 h-8 text-kisan mb-3" />
+                        <span className="font-semibold text-kisan">Click to browse or take a photo</span>
+                        <span className="text-sm text-soil mt-1">Make sure the affected area is clearly visible</span>
+                        <input type="file" className="hide-file-input" accept="image/*" onChange={handleImageChange} />
+                      </label>
+                    ) : (
+                      <div className="relative w-full h-64 rounded-xl overflow-hidden border border-kisan/10">
+                        <img src={imagePreview} alt="Crop" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Context Card */}
+                <div className="bg-white rounded-xl p-6 shadow-sm border border-kisan/10 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-kisan"></div>
+                  <h3 className="font-bold text-lg text-charcoal mb-4">
+                    {activeView === 'crop' ? 'Step 2: Basic Details' : 'Step 1: Farmer Details'}
+                  </h3>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+                    <div>
+                      <label className="block text-sm font-semibold text-charcoal mb-2 flex items-center gap-1">
+                        <Leaf className="w-4 h-4 text-soil" /> {activeView === 'crop' ? 'Crop Name *' : 'Primary Crop *'}
+                      </label>
+                      <input 
+                        type="text" 
+                        value={cropName}
+                        onChange={(e) => setCropName(e.target.value)}
+                        required
+                        className="w-full bg-bg border border-kisan/20 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kisan transition-all font-medium"
+                        placeholder="e.g. Wheat, Tomato"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-charcoal mb-2 flex items-center gap-1">
+                        <MapPin className="w-4 h-4 text-soil" /> {activeView === 'crop' ? 'District / Location *' : 'State / District *'}
+                      </label>
+                      <input 
+                        type="text" 
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        required
+                        className="w-full bg-bg border border-kisan/20 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kisan transition-all font-medium"
+                        placeholder={activeView === 'crop' ? 'e.g. Prayagraj' : 'e.g. Uttar Pradesh'}
+                      />
+                    </div>
                   </div>
 
-                  {result.audio_b64 && (
-                    <div className="bg-kisanLight/30 rounded-lg p-3 flex items-center gap-3 border border-kisan/20">
-                      <div className="w-10 h-10 rounded-full bg-white text-kisan flex items-center justify-center shrink-0 shadow-sm">
-                        <AudioLines className="w-5 h-5" />
+                  {activeView === 'yojana' && (
+                    <div>
+                      <label className="block text-sm font-semibold text-charcoal mb-2 flex items-center gap-1">
+                        <CheckCircle2 className="w-4 h-4 text-soil" /> Land Holding Size *
+                      </label>
+                      <select
+                        value={landSize}
+                        onChange={(e) => setLandSize(e.target.value)}
+                        className="w-full bg-bg border border-kisan/20 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kisan transition-all font-medium"
+                      >
+                        <option value="Marginal (< 1 Hectare)">Marginal (&lt; 1 Hectare)</option>
+                        <option value="Small (1-2 Hectares)">Small (1-2 Hectares)</option>
+                        <option value="Medium (2-10 Hectares)">Medium (2-10 Hectares)</option>
+                        <option value="Large (> 10 Hectares)">Large (&gt; 10 Hectares)</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+
+                {/* Voice & Description Card */}
+                <div className="bg-white rounded-xl p-6 shadow-sm border border-kisan/10 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-kisan"></div>
+                  <h3 className="font-bold text-lg text-charcoal mb-4">
+                    {activeView === 'crop' ? 'Step 3: Symptoms' : 'Step 2: Additional Needs'}
+                  </h3>
+                  
+                  {renderVoiceRecorder()}
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                      <div className="w-full border-t border-kisan/10"></div>
+                    </div>
+                    <div className="relative flex justify-center mb-5">
+                      <span className="px-3 bg-white text-sm font-medium text-soil">OR TYPE</span>
+                    </div>
+                  </div>
+
+                  <textarea 
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full bg-bg border border-kisan/20 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-kisan transition-all min-h-[100px] resize-none font-medium placeholder:text-soil/70"
+                    placeholder={activeView === 'crop' ? 'Describe any spots, color changes, or pests you noticed...' : 'Any other details about your farming methods, category, or specific equipment needs...'}
+                  />
+                </div>
+
+                {/* Submit Action */}
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className="w-full bg-kisan text-white font-display font-bold text-lg py-4 rounded-xl shadow-md hover:bg-green-800 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <Activity className="w-6 h-6 animate-pulse" /> Processing Request...
+                    </>
+                  ) : (
+                    <>
+                      {activeView === 'crop' ? 'Generate Treatment Plan' : 'Search Database'} <ChevronRight className="w-5 h-5" />
+                    </>
+                  )}
+                </button>
+                
+                {error && (
+                  <div className="bg-danger/10 text-danger p-4 rounded-lg font-medium flex items-start gap-3 border border-danger/20">
+                    <Info className="w-5 h-5 shrink-0 mt-0.5" />
+                    <p>{error}</p>
+                  </div>
+                )}
+
+              </form>
+            </div>
+
+            {/* Right Column: Results */}
+            <div id="results-section" className="lg:col-span-5 relative">
+              <div className="sticky top-28">
+                
+                {/* Header for results section */}
+                <div className="bg-[#1b263b] text-white p-4 rounded-t-xl flex items-center gap-3">
+                  <ScrollText className="w-5 h-5 text-harvest" />
+                  <h3 className="font-bold text-lg">Official Report</h3>
+                </div>
+
+                <div className="bg-white border-x border-b border-kisan/10 rounded-b-xl shadow-sm p-6 min-h-[400px]">
+                  {!result && !loading && (
+                    <div className="flex flex-col items-center justify-center text-center h-full opacity-60 py-12">
+                      <div className="w-16 h-16 bg-bg rounded-full flex items-center justify-center mb-4">
+                        <Info className="w-8 h-8 text-soil" />
                       </div>
-                      <div className="flex-1 w-full overflow-hidden">
-                        <p className="text-xs font-bold text-kisan uppercase mb-1">Audio Advisory</p>
-                        <audio controls className="w-full h-8 opacity-90 custom-audio" style={{maxWidth: '100%'}}>
-                          <source src={`data:audio/wav;base64,${result.audio_b64}`} type="audio/wav" />
-                        </audio>
+                      <p className="text-soil font-medium max-w-xs">
+                        {activeView === 'crop' 
+                          ? 'Submit your crop details and photo to receive an AI-generated diagnosis report.' 
+                          : 'Submit your profile to query the national database for applicable agricultural schemes.'}
+                      </p>
+                    </div>
+                  )}
+
+                  {loading && (
+                    <div className="flex flex-col items-center justify-center text-center h-full py-12">
+                      <div className="w-12 h-12 border-4 border-kisan/20 border-t-kisan rounded-full animate-spin mb-4"></div>
+                      <h4 className="font-bold text-charcoal mb-1">Processing Data</h4>
+                      <p className="text-sm text-soil">Please wait while we fetch official records...</p>
+                    </div>
+                  )}
+
+                  {/* Crop Doctor Results */}
+                  {result && !loading && activeView === 'crop' && (
+                    <div className="space-y-6">
+                      <div className="border-b border-kisan/10 pb-4">
+                        <p className="text-xs font-bold text-soil uppercase tracking-wider mb-1">Identified Condition</p>
+                        <h2 className="font-display font-bold text-2xl text-danger leading-tight">
+                          {result.disease}
+                        </h2>
+                      </div>
+
+                      {result.audio_b64 && (
+                        <div className="bg-kisanLight/30 rounded-lg p-3 flex items-center gap-3 border border-kisan/20">
+                          <div className="w-10 h-10 rounded-full bg-white text-kisan flex items-center justify-center shrink-0 shadow-sm">
+                            <AudioLines className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1 w-full overflow-hidden">
+                            <p className="text-xs font-bold text-kisan uppercase mb-1">Audio Advisory</p>
+                            <audio controls className="w-full h-8 opacity-90 custom-audio" style={{maxWidth: '100%'}}>
+                              <source src={`data:audio/wav;base64,${result.audio_b64}`} type="audio/wav" />
+                            </audio>
+                          </div>
+                        </div>
+                      )}
+
+                      <div>
+                        <h4 className="text-sm font-bold text-charcoal flex items-center gap-2 mb-2">
+                          <ShieldCheck className="w-4 h-4 text-kisan" /> Recommended Action
+                        </h4>
+                        <p className="text-sm text-charcoal/80 leading-relaxed bg-bg p-3 rounded-lg border border-kisan/5">
+                          {result.immediate_treatment}
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h4 className="text-sm font-bold text-charcoal flex items-center gap-2 mb-2">
+                          <Sun className="w-4 h-4 text-harvest" /> Chemical Control
+                        </h4>
+                        <p className="text-sm text-charcoal/80 leading-relaxed border-l-2 border-harvest pl-3 py-1">
+                          {result.chemical_fallback}
+                        </p>
+                      </div>
+
+                      <div className="bg-danger/5 border border-danger/20 p-3 rounded-lg mt-4">
+                        <h4 className="text-xs font-bold uppercase text-danger mb-1">Important Note</h4>
+                        <p className="text-sm text-danger/80">{result.urgency}</p>
                       </div>
                     </div>
                   )}
 
-                  <div>
-                    <h4 className="text-sm font-bold text-charcoal flex items-center gap-2 mb-2">
-                      <ShieldCheck className="w-4 h-4 text-kisan" /> Recommended Action
-                    </h4>
-                    <p className="text-sm text-charcoal/80 leading-relaxed bg-bg p-3 rounded-lg border border-kisan/5">
-                      {result.immediate_treatment}
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="text-sm font-bold text-charcoal flex items-center gap-2 mb-2">
-                      <Sun className="w-4 h-4 text-harvest" /> Chemical Control
-                    </h4>
-                    <p className="text-sm text-charcoal/80 leading-relaxed border-l-2 border-harvest pl-3 py-1">
-                      {result.chemical_fallback}
-                    </p>
-                  </div>
+                  {/* Yojana Radar Results */}
+                  {result && !loading && activeView === 'yojana' && result.schemes && (
+                    <div className="space-y-6">
+                      <div className="border-b border-kisan/10 pb-4">
+                        <p className="text-xs font-bold text-soil uppercase tracking-wider mb-1">Database Match Results</p>
+                        <h2 className="font-display font-bold text-xl text-[#1b263b] leading-tight">
+                          Found {result.schemes.length} Eligible Schemes
+                        </h2>
+                      </div>
 
-                  <div className="bg-danger/5 border border-danger/20 p-3 rounded-lg mt-4">
-                    <h4 className="text-xs font-bold uppercase text-danger mb-1">Important Note</h4>
-                    <p className="text-sm text-danger/80">{result.urgency}</p>
-                  </div>
-                </div>
-              )}
+                      {result.audio_b64 && (
+                         <div className="bg-kisanLight/30 rounded-lg p-3 flex items-center gap-3 border border-kisan/20">
+                           <div className="w-10 h-10 rounded-full bg-white text-kisan flex items-center justify-center shrink-0 shadow-sm">
+                              <AudioLines className="w-5 h-5" />
+                           </div>
+                           <div className="flex-1 w-full overflow-hidden">
+                              <p className="text-xs font-bold text-kisan uppercase mb-1">Audio Summary</p>
+                              <audio controls className="w-full h-8 opacity-90 custom-audio" style={{maxWidth: '100%'}}>
+                                <source src={`data:audio/wav;base64,${result.audio_b64}`} type="audio/wav" />
+                              </audio>
+                           </div>
+                         </div>
+                      )}
 
-              {/* Yojana Radar Results */}
-              {result && !loading && activeTab === 'yojana' && result.schemes && (
-                <div className="space-y-6">
-                  <div className="border-b border-kisan/10 pb-4">
-                    <p className="text-xs font-bold text-soil uppercase tracking-wider mb-1">Database Match Results</p>
-                    <h2 className="font-display font-bold text-xl text-[#1b263b] leading-tight">
-                      Found {result.schemes.length} Eligible Schemes
-                    </h2>
-                  </div>
-
-                  {result.audio_b64 && (
-                     <div className="bg-kisanLight/30 rounded-lg p-3 flex items-center gap-3 border border-kisan/20">
-                       <div className="w-10 h-10 rounded-full bg-white text-kisan flex items-center justify-center shrink-0 shadow-sm">
-                          <AudioLines className="w-5 h-5" />
-                       </div>
-                       <div className="flex-1 w-full overflow-hidden">
-                          <p className="text-xs font-bold text-kisan uppercase mb-1">Audio Summary</p>
-                          <audio controls className="w-full h-8 opacity-90 custom-audio" style={{maxWidth: '100%'}}>
-                            <source src={`data:audio/wav;base64,${result.audio_b64}`} type="audio/wav" />
-                          </audio>
-                       </div>
-                     </div>
+                      <div className="space-y-4">
+                        {result.schemes.map((scheme, idx) => (
+                          <div key={idx} className="bg-bg rounded-xl p-4 border border-kisan/10">
+                            <div className="flex gap-2 items-start mb-3">
+                              <span className="bg-[#1b263b] text-white text-xs font-bold w-5 h-5 rounded flex items-center justify-center shrink-0 mt-0.5">{idx + 1}</span>
+                              <h4 className="font-bold text-charcoal leading-tight">{scheme.scheme_name}</h4>
+                            </div>
+                            
+                            <div className="space-y-3 pl-7">
+                              <div>
+                                <p className="text-[10px] font-bold text-soil uppercase mb-0.5">Eligibility</p>
+                                <p className="text-sm text-charcoal/80 leading-snug">{scheme.eligibility}</p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] font-bold text-soil uppercase mb-0.5 text-kisan">Benefits</p>
+                                <p className="text-sm font-medium text-kisan leading-snug">{scheme.benefits}</p>
+                              </div>
+                              <div className="bg-white p-2 rounded border border-kisan/5">
+                                <p className="text-[10px] font-bold text-soil uppercase mb-0.5">How to Apply</p>
+                                <p className="text-xs text-charcoal/80 leading-snug">{scheme.how_to_apply}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
 
-                  <div className="space-y-4">
-                    {result.schemes.map((scheme, idx) => (
-                      <div key={idx} className="bg-bg rounded-xl p-4 border border-kisan/10">
-                        <div className="flex gap-2 items-start mb-3">
-                          <span className="bg-[#1b263b] text-white text-xs font-bold w-5 h-5 rounded flex items-center justify-center shrink-0 mt-0.5">{idx + 1}</span>
-                          <h4 className="font-bold text-charcoal leading-tight">{scheme.scheme_name}</h4>
-                        </div>
-                        
-                        <div className="space-y-3 pl-7">
-                          <div>
-                            <p className="text-[10px] font-bold text-soil uppercase mb-0.5">Eligibility</p>
-                            <p className="text-sm text-charcoal/80 leading-snug">{scheme.eligibility}</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] font-bold text-soil uppercase mb-0.5 text-kisan">Benefits</p>
-                            <p className="text-sm font-medium text-kisan leading-snug">{scheme.benefits}</p>
-                          </div>
-                          <div className="bg-white p-2 rounded border border-kisan/5">
-                            <p className="text-[10px] font-bold text-soil uppercase mb-0.5">How to Apply</p>
-                            <p className="text-xs text-charcoal/80 leading-snug">{scheme.how_to_apply}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 </div>
-              )}
-
+              </div>
             </div>
+
           </div>
-        </div>
+        )}
 
       </main>
 
